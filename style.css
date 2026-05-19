@@ -1,0 +1,1191 @@
+/* ==========================================================================
+   CATALISADOR DE VENDAS - PREMIUM CINEMATIC STYLESHEET
+   --------------------------------------------------------------------------
+   Objetivo deste arquivo:
+   1. Elevar a percepcao visual sem mudar a copy nem a estrutura principal.
+   2. Criar profundidade, motion design e microinteracoes de alto padrao.
+   3. Manter performance: animacoes leves, transform/opacity e poucos repaints.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. DESIGN TOKENS, BASE GLOBAL E PERFORMANCE
+   ========================================================================== */
+:root {
+    /* Paleta oficial — Catalisador de Vendas */
+    --color-dark: #0f0f0f;
+    --color-brown-dark: #2b1e16;
+    --color-brown: #5a3e2b;
+    --color-beige: #f5e9dc;
+    --color-ink: #050505;
+    --color-panel: rgba(255, 255, 255, 0.055);
+    --color-line: rgba(255, 255, 255, 0.11);
+    --color-line-strong: rgba(255, 255, 255, 0.18);
+    --color-brand: #ff6a00;
+    --color-brand-hover: #e65f00;
+    --color-brand-soft: rgba(255, 106, 0, 0.16);
+    --color-brand-glow: rgba(255, 106, 0, 0.34);
+    --color-warm-glow: rgba(90, 62, 43, 0.22);
+    --ease-premium: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    --mouse-x: 50%;
+    --mouse-y: 18%;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: geometricPrecision;
+}
+
+body {
+    background:
+        radial-gradient(circle at 50% -20%, rgba(255, 106, 0, 0.13), transparent 34rem),
+        radial-gradient(circle at 88% 18%, var(--color-warm-glow), transparent 28rem),
+        linear-gradient(180deg, var(--color-dark) 0%, var(--color-brown-dark) 120%);
+}
+
+/* Mantem o acabamento premium sem depender de letter-spacing negativo. */
+.tracking-tight,
+.tracking-tighter {
+    letter-spacing: 0 !important;
+}
+
+/* Performance: will-change fica restrito aos blocos que realmente se movem. */
+.reveal,
+.hero-portrait,
+.editorial-photo {
+    will-change: transform, opacity;
+}
+
+/* Contem pintura em blocos visuais complexos e reduz repaints fora do card. */
+.premium-card,
+.editorial-photo,
+.diagnostic-card,
+.hero-portrait {
+    contain: paint;
+}
+
+/* Melhor adaptacao para monitores ultrawide sem quebrar o layout. */
+@media (min-width: 2000px) {
+    html {
+        font-size: 18px;
+    }
+}
+
+/* ==========================================================================
+   2. SCROLLBAR PREMIUM E SELECAO
+   ========================================================================== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 106, 0, 0.55));
+    border: 2px solid #050505;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brand);
+}
+
+/* Focus states for accessibility */
+:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-brand);
+    color: white;
+    padding: 1rem 2rem;
+    z-index: 9999;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.skip-link:focus {
+    top: 1rem;
+}
+
+/* ==========================================================================
+   3. BACKGROUND CINEMATICO GLOBAL
+   --------------------------------------------------------------------------
+   Camadas leves: grid, textura, glow reativo ao mouse e luzes lentas.
+   ========================================================================== */
+.cinematic-bg {
+    isolation: isolate;
+}
+
+.ambient-grid {
+    opacity: 0.48;
+    transform: translateZ(0);
+}
+
+.ambient-sweep {
+    position: absolute;
+    inset: -20%;
+    background:
+        conic-gradient(from 210deg at 50% 45%, transparent 0deg, rgba(255, 106, 0, 0.10) 58deg, transparent 124deg),
+        linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.035) 48%, transparent 62%);
+    filter: blur(10px);
+    opacity: 0.34;
+    mix-blend-mode: screen;
+    animation: ambient-sweep 28s var(--ease-smooth) infinite alternate;
+}
+
+.ambient-depth {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 12% 12%, rgba(255, 106, 0, 0.15), transparent 28rem),
+        radial-gradient(circle at 82% 34%, rgba(90, 62, 43, 0.14), transparent 32rem),
+        radial-gradient(circle at 52% 92%, rgba(255, 255, 255, 0.045), transparent 26rem);
+    filter: saturate(105%);
+    opacity: 0.72;
+}
+
+.film-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    background-image:
+        linear-gradient(0deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+    background-size: 3px 3px;
+    mask-image: linear-gradient(to bottom, black, transparent 84%);
+}
+
+.mouse-glow {
+    position: fixed;
+    left: var(--mouse-x);
+    top: var(--mouse-y);
+    z-index: 1;
+    width: 24rem;
+    height: 24rem;
+    pointer-events: none;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255, 106, 0, 0.10), rgba(255, 255, 255, 0.025) 34%, transparent 68%);
+    opacity: 0.38;
+    transform: translate(-50%, -50%) translateZ(0);
+    mix-blend-mode: screen;
+}
+
+/* ==========================================================================
+   4. NAVBAR E BOTOES
+   ========================================================================== */
+#navbar {
+    transform: translateZ(0);
+}
+
+#navbar.nav-scrolled {
+    box-shadow: 0 18px 70px rgba(0, 0, 0, 0.36);
+}
+
+.premium-button {
+    position: relative;
+    isolation: isolate;
+}
+
+.premium-button::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 34%, rgba(255, 255, 255, 0.10));
+    opacity: 0;
+    transition: opacity 450ms var(--ease-premium);
+    z-index: -1;
+}
+
+.premium-button:hover::before {
+    opacity: 1;
+}
+#navbar {
+    transform: translateZ(0);
+    height: 82px;
+    display: flex;
+    align-items: center;
+}
+/* ==========================================================================
+   5. HERO SECTION - EDITORIAL, LUXO E PROFUNDIDADE
+   ========================================================================== */
+.hero-section {
+    isolation: isolate;
+}
+
+.hero-section::before {
+    content: "";
+    position: absolute;
+    inset: 7rem -8rem auto -8rem;
+    height: 26rem;
+    background:
+        radial-gradient(circle at 28% 48%, rgba(255, 106, 0, 0.18), transparent 34rem),
+        radial-gradient(circle at 72% 42%, rgba(255, 255, 255, 0.08), transparent 24rem);
+    filter: blur(34px);
+    opacity: 0.9;
+    z-index: -1;
+}
+
+.hero-copy {
+    position: relative;
+}
+
+.hero-copy::after {
+    content: "";
+    position: absolute;
+    right: -6rem;
+    bottom: 2rem;
+    width: 14rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 106, 0, 0.65), transparent);
+    opacity: 0.55;
+}
+
+.eyebrow-premium {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 18px 60px rgba(0, 0, 0, 0.32);
+}
+
+.hero-portrait {
+    isolation: isolate;
+    transform-style: preserve-3d;
+    box-shadow:
+        0 38px 110px rgba(0, 0, 0, 0.72),
+        0 0 0 1px rgba(255, 255, 255, 0.09),
+        0 0 90px rgba(255, 106, 0, 0.13);
+}
+
+.hero-portrait::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 12;
+    pointer-events: none;
+    background:
+        linear-gradient(120deg, rgba(255, 255, 255, 0.22), transparent 24%, transparent 64%, rgba(255, 106, 0, 0.12)),
+        radial-gradient(circle at 44% 26%, rgba(255, 255, 255, 0.18), transparent 16rem);
+    mix-blend-mode: screen;
+}
+
+.hero-portrait::after {
+    content: "";
+    position: absolute;
+    inset: auto 8% -4% 8%;
+    height: 18%;
+    z-index: 13;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent, rgba(255, 106, 0, 0.16));
+    filter: blur(14px);
+}
+
+.hero-image {
+    filter: contrast(1.08) brightness(1.08) saturate(0.9);
+}
+
+.hero-portrait:hover .hero-image {
+    filter: contrast(1.1) brightness(1.12) saturate(1.04);
+}
+
+.hero-nameplate {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 18px 60px rgba(0, 0, 0, 0.36);
+}
+
+.floating-signal {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 20px 60px rgba(0, 0, 0, 0.42),
+        0 0 34px rgba(255, 106, 0, 0.10);
+}
+
+/* ==========================================================================
+   6. CARDS, TIMELINE E MICROINTERACOES
+   ========================================================================== */
+.premium-card {
+    position: relative;
+    isolation: isolate;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 24px 70px rgba(0, 0, 0, 0.22);
+}
+
+.premium-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(circle at var(--card-x, 50%) var(--card-y, 0%), rgba(255, 106, 0, 0.18), transparent 34%);
+    opacity: 0;
+    transition: opacity 360ms var(--ease-premium);
+}
+
+.premium-card:hover::before {
+    opacity: 1;
+}
+
+.timeline-step {
+    transition: transform 700ms var(--ease-premium), opacity 700ms var(--ease-premium);
+}
+
+.timeline-step:hover {
+    transform: translateY(-4px);
+}
+
+.flow-step {
+    transition:
+        border-color 360ms var(--ease-premium),
+        transform 360ms var(--ease-premium),
+        box-shadow 360ms var(--ease-premium);
+}
+
+.flow-step:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 50px rgba(255, 106, 0, 0.14);
+}
+
+/* ==========================================================================
+   7. GALERIA EDITORIAL
+   --------------------------------------------------------------------------
+   Tratamento premium para fotos reais do Michel Paiva e bastidores da marca.
+   ========================================================================== */
+.editorial-photo,
+.transformation-point,
+.fit-card {
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition:
+        transform 360ms var(--ease-premium),
+        border-color 360ms var(--ease-premium),
+        background-color 360ms var(--ease-premium);
+}
+
+.editorial-photo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        linear-gradient(180deg, transparent 35%, rgba(0, 0, 0, 0.78) 100%),
+        radial-gradient(circle at 24% 12%, rgba(255, 106, 0, 0.18), transparent 18rem);
+}
+
+.editorial-photo::after,
+.fit-card::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+    transform: translateX(-110%);
+    transition: transform 760ms var(--ease-premium);
+    pointer-events: none;
+}
+
+.editorial-photo {
+    min-height: 21rem;
+}
+
+.editorial-photo-large {
+    min-height: 34rem;
+}
+
+/* Coluna direita da galeria Michel — proporção natural, sem esticar */
+.editorial-stack {
+    min-height: 0;
+}
+
+@media (min-width: 768px) {
+    .editorial-grid {
+        align-items: stretch;
+    }
+
+    .editorial-stack {
+        grid-template-rows: 1.1fr 0.9fr;
+        height: 100%;
+        min-height: 34rem;
+    }
+
+    .editorial-stack .editorial-photo-couple,
+    .editorial-stack .editorial-photo-secondary {
+        min-height: 0;
+        height: 100%;
+    }
+}
+
+/* Foto casal: sem filtro pesado, sem zoom no hover, overlay leve */
+.editorial-photo-couple {
+    min-height: 16rem;
+}
+
+.editorial-photo-couple::before {
+    background: linear-gradient(180deg, transparent 58%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.editorial-photo-couple::after {
+    display: none;
+}
+
+.editorial-photo-couple img {
+    object-fit: cover;
+    object-position: center top;
+    filter: none;
+}
+
+.editorial-photo-couple:hover {
+    transform: none;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.editorial-photo-couple:hover img {
+    transform: none;
+    filter: none;
+}
+
+.editorial-photo img {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 900ms var(--ease-premium), filter 900ms var(--ease-premium);
+    filter: contrast(1.04) brightness(0.92) saturate(0.92);
+}
+
+.image-fallback {
+    position: absolute;
+    inset: 1rem;
+    display: grid;
+    place-items: center;
+    border: 1px dashed rgba(255, 255, 255, 0.16);
+    border-radius: 0.85rem;
+    color: rgba(255, 255, 255, 0.42);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.editorial-photo img:not([src=""]) {
+    z-index: 0;
+}
+
+.editorial-photo img.image-error {
+    display: none;
+}
+
+.editorial-photo figcaption {
+    z-index: 3;
+    pointer-events: none;
+}
+
+.editorial-photo:hover img {
+    transform: scale(1.035);
+    filter: contrast(1.08) brightness(1) saturate(1);
+}
+
+.editorial-photo:hover,
+.transformation-point:hover,
+.fit-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 106, 0, 0.34);
+}
+
+.editorial-photo:hover::after,
+.fit-card:hover::after {
+    transform: translateX(110%);
+}
+
+/* ==========================================================================
+   8. FORMULARIO PREMIUM COM FLOATING LABELS
+   ========================================================================== */
+.diagnostic-card {
+    position: relative;
+    isolation: isolate;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 28px 78px rgba(0, 0, 0, 0.42),
+        0 0 42px rgba(255, 106, 0, 0.08);
+}
+
+.diagnostic-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background:
+        radial-gradient(circle at 12% 0%, rgba(255, 106, 0, 0.18), transparent 18rem),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 40%);
+    opacity: 0.82;
+}
+
+.form-field {
+    position: relative;
+}
+
+.form-control {
+    min-height: 3.7rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.form-control::placeholder {
+    color: transparent !important;
+}
+
+.form-label {
+    position: absolute;
+    left: 1.25rem;
+    top: 1.12rem;
+    padding: 0 0.35rem;
+    color: rgba(156, 163, 175, 0.88);
+    background: linear-gradient(180deg, rgba(12, 12, 12, 0.96), rgba(12, 12, 12, 0.78));
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    pointer-events: none;
+    transform-origin: left top;
+    transition:
+        transform 260ms var(--ease-premium),
+        color 260ms var(--ease-premium),
+        top 260ms var(--ease-premium);
+}
+
+.form-field:focus-within .form-label,
+.form-field.has-value .form-label {
+    top: -0.5rem;
+    color: #ffb47a;
+    transform: scale(0.86);
+}
+
+.form-field:focus-within .form-control {
+    border-color: rgba(255, 106, 0, 0.76) !important;
+    box-shadow:
+        0 0 0 1px rgba(255, 106, 0, 0.40),
+        0 0 34px rgba(255, 106, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+.form-field select.form-control {
+    background-image:
+        linear-gradient(45deg, transparent 50%, rgba(255, 255, 255, 0.75) 50%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.75) 50%, transparent 50%);
+    background-position:
+        calc(100% - 22px) 52%,
+        calc(100% - 16px) 52%;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+}
+
+/* ==========================================================================
+   9. FOOTER EXECUTIVO
+   ========================================================================== */
+.luxury-footer {
+    background:
+        linear-gradient(180deg, #050505 0%, #080706 52%, #050505 100%);
+}
+
+.luxury-footer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, transparent, rgba(255, 106, 0, 0.10), transparent),
+        radial-gradient(circle at 74% 0%, rgba(90, 62, 43, 0.12), transparent 26rem);
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+.footer-metric {
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.045);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================================================
+   10. KEYFRAMES E ANIMACOES EXISTENTES REFINADAS
+   ========================================================================== */
+@keyframes float {
+    0% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -12px, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+}
+
+.animate-float {
+    animation: float 9s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+    0%, 100% { opacity: 0.24; transform: scale(1); }
+    50% { opacity: 0.48; transform: scale(1.045); }
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 11s ease-in-out infinite;
+}
+
+@keyframes grid-drift {
+    from { background-position: 0 0, 0 0; }
+    to { background-position: 4rem 4rem, 4rem 4rem; }
+}
+
+@keyframes ambient-sweep {
+    0% { transform: translate3d(-2%, -1%, 0) rotate(0deg); opacity: 0.45; }
+    100% { transform: translate3d(2%, 1%, 0) rotate(4deg); opacity: 0.68; }
+}
+
+@keyframes depth-breathe {
+    0%, 100% { transform: scale(1); opacity: 0.78; }
+    50% { transform: scale(1.035); opacity: 1; }
+}
+
+/* ==========================================================================
+   11. REVEAL ANIMATIONS (INTERSECTION OBSERVER)
+   ========================================================================== */
+.reveal {
+    opacity: 0;
+    transition:
+        opacity 1100ms var(--ease-premium),
+        transform 1100ms var(--ease-premium);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+}
+
+.fade-bottom {
+    transform: translate3d(0, 56px, 0);
+}
+
+.fade-right {
+    transform: translate3d(56px, 0, 0);
+}
+
+.fade-left {
+    transform: translate3d(-56px, 0, 0);
+}
+
+/* ==========================================================================
+   12. RESPONSIVIDADE E ACESSIBILIDADE DE MOVIMENTO
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .mouse-glow {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-copy::after {
+        display: none;
+    }
+
+    .editorial-photo-large,
+    .editorial-photo {
+        min-height: 24rem;
+    }
+
+    .floating-signal {
+        position: relative !important;
+        inset: auto !important;
+        margin-top: 1rem;
+    }
+
+    .ambient-sweep,
+    .film-grain {
+        display: none;
+    }
+}
+
+/* Small mobile devices (320px - 375px) */
+@media (max-width: 425px) {
+    html {
+        font-size: 14px;
+    }
+    
+    .hero-section {
+        padding-top: 7rem;
+        padding-bottom: 3rem;
+    }
+    
+    .hero-copy h1 {
+        font-size: 1.75rem;
+        line-height: 1.15;
+    }
+    
+    .hero-copy h2 {
+        font-size: 1.125rem;
+    }
+    
+    .hero-portrait {
+        min-height: 400px;
+    }
+    
+    .hero-nameplate {
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .hero-nameplate p:first-child {
+        font-size: 1.25rem;
+    }
+    
+    .hero-nameplate p:last-child {
+        font-size: 0.75rem;
+    }
+}
+
+/* Extra small devices (320px) */
+@media (max-width: 320px) {
+    html {
+        font-size: 13px;
+    }
+    
+    .hero-section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 6rem;
+        padding-bottom: 2rem;
+    }
+    
+    section {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+    }
+    
+    .premium-button {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.875rem;
+    }
+    
+    .mobile-cta-bar {
+        padding: 0.625rem 0.875rem;
+    }
+    
+    .mobile-cta-bar a {
+        padding: 0.875rem 1rem;
+        font-size: 0.8125rem;
+    }
+    
+    .diagnostic-card {
+        padding: 1.5rem;
+    }
+    
+    .form-field {
+        margin-bottom: 1rem;
+    }
+    
+    .positioning-card {
+        padding: 1.25rem 1rem;
+        min-height: 8rem;
+    }
+    
+    .fit-card {
+        padding: 1.5rem;
+    }
+}
+
+/* Medium mobile devices (375px - 425px) */
+@media (min-width: 375px) and (max-width: 425px) {
+    .hero-copy h1 {
+        font-size: 2rem;
+    }
+    
+    section {
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+    }
+    
+    .diagnostic-card {
+        padding: 2rem;
+    }
+}
+
+/* Tablet devices (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .hero-portrait {
+        min-height: 500px;
+    }
+    
+    section {
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+    }
+}
+
+/* Mobile menu improvements */
+@media (max-width: 1023px) {
+    #mobile-menu-btn {
+        min-width: 48px;
+        min-height: 48px;
+        padding: 0.5rem;
+    }
+    
+    #mobile-menu a {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 1.5rem;
+    }
+    
+    #mobile-menu a[href="#diagnostico"] {
+        min-height: 56px;
+    }
+}
+
+/* Fix horizontal overflow */
+@media (max-width: 425px) {
+    * {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .hero-section,
+    section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .grid {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .premium-button {
+        width: auto;
+        max-width: 100%;
+        white-space: normal;
+        text-align: center;
+        padding: 0.875rem 1.5rem;
+    }
+    
+    .hero-copy .grid {
+        gap: 0.75rem;
+    }
+    
+    .hero-copy .grid > div {
+        padding: 0.5rem;
+    }
+    
+    .hero-copy .grid svg {
+        flex-shrink: 0;
+    }
+    
+    .hero-copy .grid span {
+        font-size: 0.8125rem;
+        line-height: 1.3;
+    }
+}
+
+/* Touch target improvements for mobile */
+@media (max-width: 768px) {
+    a, button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .premium-button {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.9375rem;
+    }
+    
+    input, select, textarea {
+        min-height: 48px;
+        font-size: 16px; /* Prevent iOS zoom */
+    }
+    
+    .form-control {
+        min-height: 48px;
+        padding-top: 1.25rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    .form-label {
+        font-size: 0.6875rem;
+        top: 0.875rem;
+    }
+    
+    /* Reduce heavy effects on mobile for performance */
+    .ambient-depth,
+    .ambient-sweep,
+    .film-grain {
+        opacity: 0.3;
+    }
+    
+    .premium-card::before,
+    .editorial-photo::before {
+        opacity: 0.5;
+    }
+    
+    /* Reduce animation complexity on mobile */
+    .reveal {
+        transition-duration: 600ms;
+    }
+    
+    .premium-card,
+    .editorial-photo {
+        transition-duration: 300ms;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+    }
+}
+
+/* ==========================================================================
+   13. MARCA — LOGO, TAGLINE E ELEMENTOS GRÁFICOS
+   ========================================================================== */
+.brand-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.brand-logo img,
+.brand-logo svg {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+}
+
+.brand-logo--full img,
+.brand-logo--full svg {
+    width: 350px;
+    height: auto;
+}
+
+.brand-logo--footer img,
+.brand-logo--footer svg {
+    height: 3.35rem;
+    max-width: min(22rem, 92vw);
+    object-fit: contain;
+    display: block;
+}
+
+.brand-logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    line-height: 1;
+}
+
+.brand-logo-name {
+    font-family: "Lexend", "Montserrat", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.brand-tagline {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-beige);
+    opacity: 0.72;
+}
+
+.brand-stripe {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 106, 0, 0.55), transparent);
+    pointer-events: none;
+}
+
+.brand-stripe--diag {
+    width: 42%;
+    transform: rotate(-12deg);
+}
+
+/* ==========================================================================
+   14. FRASES DE POSICIONAMENTO
+   ========================================================================== */
+.positioning-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .positioning-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .positioning-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.positioning-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: 1rem;
+    background: linear-gradient(145deg, rgba(43, 30, 22, 0.55), rgba(255, 255, 255, 0.04));
+    padding: 1.75rem 1.5rem;
+    min-height: 9.5rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition:
+        transform 360ms var(--ease-premium),
+        border-color 360ms var(--ease-premium),
+        box-shadow 360ms var(--ease-premium);
+}
+
+.positioning-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--color-brand), transparent);
+    opacity: 0.85;
+}
+
+.positioning-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 106, 0, 0.35);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28), 0 0 30px rgba(255, 106, 0, 0.08);
+}
+
+.positioning-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 106, 0, 0.28);
+    background: rgba(255, 106, 0, 0.1);
+    color: var(--color-brand);
+}
+
+.positioning-card p {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.45;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-beige);
+}
+
+/* ==========================================================================
+   15. SOBRE / BIO MICHEL
+   ========================================================================== */
+.bio-panel {
+    border: 1px solid var(--color-line);
+    border-radius: 1.25rem;
+    background: linear-gradient(160deg, rgba(43, 30, 22, 0.65), rgba(15, 15, 15, 0.9));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.bio-stat {
+    border: 1px solid var(--color-line);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 1rem 1.1rem;
+}
+
+/* ==========================================================================
+   16. CTA FLUTUANTE MOBILE (REMOVIDO)
+   ========================================================================== */
+
+/* ==========================================================================
+   17. FORM UTILITIES
+   ========================================================================== */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.hero-portrait.is-placeholder .hero-image,
+.editorial-photo.is-placeholder img {
+    object-fit: cover;
+    filter: contrast(1.05) brightness(0.88) saturate(0.85);
+}
+
+.hero-portrait.is-placeholder::before,
+.editorial-photo.is-placeholder::before {
+    background:
+        linear-gradient(180deg, transparent 40%, rgba(15, 15, 15, 0.92) 100%),
+        radial-gradient(circle at 30% 20%, rgba(255, 106, 0, 0.22), transparent 50%),
+        linear-gradient(135deg, var(--color-brown-dark), var(--color-dark));
+}
+
+/* ==========================================================================
+   18. CORREÇÃO DEFINITIVA DE IMAGEM (CONTAINER BLINDADO)
+   ========================================================================== */
+.image-col,
+.plano-image-col,
+.autoridade-image {
+    width: 100%;
+    height: 100%;
+    min-height: 550px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.image-col img,
+.plano-image-col img,
+.autoridade-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
